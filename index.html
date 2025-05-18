@@ -189,7 +189,7 @@ function purify(videoId) {
 const player = document.getElementById("player");
 const section = document.getElementById("playerSection");
 
-player.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
 section.style.display = "block";
 
 section.scrollIntoView({ behavior: 'smooth' });
