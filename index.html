@@ -137,19 +137,24 @@
       font-weight: bold;
     }
 
-    .iframe {
+    .iframe-section {
       width: 100%;
-      height: 560px;
+      max-width: 1000px;
+      aspect-ratio: 16 / 9;
       display: none;
+      background: black;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
     }
 
-    .iframe iframe {
+    .iframe-section iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
 
-    /* Refresh Button */
     .refresh-button {
       position: fixed;
       bottom: 20px;
@@ -203,10 +208,8 @@
   </svg>
 </button>
 
-<!-- Title -->
 <h1>music.</h1>
 
-<!-- Search Section -->
 <section class="search-section">
   <div class="search-box">
     <input type="text" id="query" placeholder="search...">
@@ -216,15 +219,16 @@
   <button id="viewMoreBtn" style="display:none;" onclick="showMore()">View More</button>
 </section>
 
-<!-- Iframe Section -->
-<section class="iframe-section iframe" id="playerSection">
-  <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<section class="iframe-section" id="playerSection">
+  <div id="player"></div>
 </section>
 
 <script>
 const apiKey = "AIzaSyDcIFol8bKEv2dbJPacvHMUOJembMRjowo";
 let currentResults = [];
 let shownCount = 0;
+let ytPlayer;
+let currentVideoId = "";
 
 function searchYouTube() {
   const query = document.getElementById("query").value;
@@ -270,13 +274,49 @@ function showMore() {
 }
 
 function purify(videoId) {
-  const player = document.getElementById("player");
+  currentVideoId = videoId;
   const section = document.getElementById("playerSection");
-
-  player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1`;
-
   section.style.display = "block";
   section.scrollIntoView({ behavior: 'smooth' });
+
+  const vars = {
+    autoplay: 0,
+    rel: 0,
+    modestbranding: 1,
+    controls: 0,
+    showinfo: 0,
+    iv_load_policy: 3,
+    fs: 0,
+    disablekb: 1
+  };
+
+  if (ytPlayer) {
+    ytPlayer.loadVideoById({ videoId, suggestedQuality: 'small' });
+    setTimeout(() => {
+      ytPlayer.setPlaybackQuality('small');
+      ytPlayer.playVideo();
+    }, 1000);
+  } else {
+    ytPlayer = new YT.Player('player', {
+      height: '100%',
+      width: '100%',
+      videoId: videoId,
+      playerVars: vars,
+      events: {
+        'onReady': () => {
+          setTimeout(() => {
+            ytPlayer.setPlaybackQuality('small');
+            ytPlayer.playVideo();
+          }, 1000);
+        },
+        'onStateChange': (event) => {
+          if (event.data === YT.PlayerState.PLAYING) {
+            ytPlayer.setPlaybackQuality('small');
+          }
+        }
+      }
+    });
+  }
 }
 
 // Theme Toggle
@@ -307,5 +347,6 @@ refreshBtn.addEventListener("click", () => {
   }, 300);
 });
 </script>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
