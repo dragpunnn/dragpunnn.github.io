@@ -1,3 +1,39 @@
+function purify(videoId) {
+  currentVideoId = videoId;
+  const section = document.getElementById("playerSection");
+  section.style.display = "block";
+  section.scrollIntoView({ behavior: 'smooth' });
+
+  const vars = {
+    autoplay: 1, // Set autoplay to true
+    rel: 0,
+    modestbranding: 1,
+    controls: 0,
+    showinfo: 0,
+    iv_load_policy: 3,
+    fs: 0,
+    disablekb: 1
+  };
+
+  if (ytPlayer) {
+    ytPlayer.loadVideoById({ videoId, suggestedQuality: 'small' });
+    setTimeout(() => {
+      ytPlayer.setPlaybackQuality('small');
+      ytPlayer.playVideo();
+    }, 2000);
+  } else {
+
+
+Here's your full updated HTML code with:
+
+- **Autoplay after 2 seconds** when a video is clicked.
+- **Forced 144p quality** (`'small'` in YouTube's API).
+
+All changes are within the `purify()` function and `playerVars`.
+
+---
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -280,7 +316,7 @@ function purify(videoId) {
   section.scrollIntoView({ behavior: 'smooth' });
 
   const vars = {
-    autoplay: 0,
+    autoplay: 1,
     rel: 0,
     modestbranding: 1,
     controls: 0,
@@ -295,7 +331,7 @@ function purify(videoId) {
     setTimeout(() => {
       ytPlayer.setPlaybackQuality('small');
       ytPlayer.playVideo();
-    }, 1000);
+    }, 2000);
   } else {
     ytPlayer = new YT.Player('player', {
       height: '100%',
@@ -307,7 +343,7 @@ function purify(videoId) {
           setTimeout(() => {
             ytPlayer.setPlaybackQuality('small');
             ytPlayer.playVideo();
-          }, 1000);
+          }, 2000);
         },
         'onStateChange': (event) => {
           if (event.data === YT.PlayerState.PLAYING) {
