@@ -5,7 +5,9 @@
   <title>music.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Niconne&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Notable&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-light: #f4f4f4;
@@ -18,8 +20,13 @@
     * { 
       box-sizing: border-box;
  box-sizing: border-box;
-         font-family: "Niconne", cursive, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-weight: 400;
+   font-family: 'IBM Plex Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
     }
     body {
       background: var(--bg-light);
@@ -42,6 +49,7 @@
       font-weight: 500;
       font-size: 2.2rem;
       letter-spacing: -0.5px;
+        font-family: 'Notable', sans-serif;
     }
     .top-right {
       position: absolute;
@@ -83,7 +91,7 @@
       font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: var(--border-radius);
-      font-weight: 300;
+      font-weight: 900;
     }
     button {
       padding: 0.8rem 1.5rem;
