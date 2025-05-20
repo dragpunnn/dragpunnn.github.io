@@ -5,7 +5,7 @@
   <title>music.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-light: #f4f4f4;
@@ -13,10 +13,14 @@
       --text-light: #000;
       --text-dark: #fff;
       --button-bg: #555;
+      --border-radius: 12px;
     }
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 400;
+    }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
       background: var(--bg-light);
       color: var(--text-light);
       padding: 20px;
@@ -25,6 +29,7 @@
       flex-direction: column;
       align-items: center;
       transition: background 0.5s ease, color 0.5s ease;
+      line-height: 1.5;
     }
     body.dark-mode {
       background: var(--bg-dark);
@@ -33,7 +38,9 @@
     h1 {
       margin-bottom: 20px;
       text-align: center;
-      font-weight: 600;
+      font-weight: 500;
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
     }
     .top-right {
       position: absolute;
@@ -48,6 +55,8 @@
       cursor: pointer;
       color: inherit;
       transition: transform 0.4s ease;
+      border-radius: var(--border-radius);
+      padding: 5px;
     }
     .toggle-button.animate {
       transform: rotate(180deg) scale(1.2);
@@ -69,21 +78,23 @@
     }
     input {
       flex: 1;
-      padding: 0.5rem;
+      padding: 0.8rem 1rem;
       font-size: 1rem;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
+      font-weight: 300;
     }
     button {
-      padding: 0.5rem 1rem;
+      padding: 0.8rem 1.5rem;
       font-size: 1rem;
       background: var(--button-bg);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       margin-left: 10px;
       cursor: pointer;
       transition: background 0.3s ease;
+      font-weight: 400;
     }
     .results {
       margin-top: 20px;
@@ -97,7 +108,7 @@
       width: 300px;
       background: white;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       overflow: hidden;
       transition: box-shadow 0.2s;
       text-align: center;
@@ -111,33 +122,48 @@
     }
     .video-item img {
       width: 100%;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
     }
     .video-title {
-      padding: 10px;
-      font-size: 14px;
-      font-weight: bold;
+      padding: 15px;
+      font-size: 0.95rem;
+      font-weight: 400;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
     }
     .iframe {
       width: 100%;
       height: 560px;
       display: none;
+      border-radius: var(--border-radius);
+      overflow: hidden;
     }
     .iframe iframe {
       width: 100%;
       height: 100%;
       border: none;
+      border-radius: var(--border-radius);
     }
     .refresh-button {
       position: fixed;
       bottom: 20px;
       left: 0.2vw;
       z-index: 101;
-      background: none;
+      background: var(--button-bg);
       border: none;
-      font-size: 1.8rem;
       cursor: pointer;
       color: inherit;
       transition: transform 0.5s ease;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .refresh-button svg {
+      width: 24px;
+      height: 24px;
     }
     .refresh-button.rotate {
       transform: rotate(360deg);
@@ -147,12 +173,12 @@
     }
     #viewMoreBtn {
       margin-top: 20px;
-      padding: 0.5rem 1rem;
+      padding: 0.8rem 1.5rem;
       font-size: 1rem;
       background: var(--button-bg);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       cursor: pointer;
     }
     body.dark-mode #viewMoreBtn {
@@ -170,7 +196,7 @@
 
 <!-- Refresh Button -->
 <button class="refresh-button" id="refreshButton" title="Refresh page">
-  <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
     <path d="M0 0h24v24H0z" fill="none"/>
     <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H5a7 7 0 1 1 7 7 1 1 0 1 0 0 2 9 9 0 0 0 0-18z"/>
   </svg>
@@ -247,23 +273,32 @@ function purify(videoId) {
 
   if (player) {
     player.loadVideoById(videoId);
+    setTimeout(() => {
+      player.setPlaybackQuality('tiny');
+    }, 1000);
   } else {
     player = new YT.Player('player', {
       videoId: videoId,
       playerVars: {
-        autoplay: 1,
+        autoplay: 0,
         rel: 0,
         modestbranding: 1,
         playsinline: 1
       },
       events: {
         onReady: (e) => {
-          e.target.playVideo();
           e.target.setPlaybackQuality('tiny');
+          // Additional quality enforcement
+          const enforceQuality = () => {
+            if (e.target.getPlaybackQuality() !== 'tiny') {
+              e.target.setPlaybackQuality('tiny');
+            }
+          };
+          setInterval(enforceQuality, 1000);
         },
         onStateChange: (e) => {
           if (e.data === YT.PlayerState.PLAYING) {
-            player.setPlaybackQuality('tiny');
+            e.target.setPlaybackQuality('tiny');
           }
         }
       }
