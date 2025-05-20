@@ -14,11 +14,7 @@
       --text-dark: #fff;
       --button-bg: #555;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
       background: var(--bg-light);
@@ -30,25 +26,21 @@
       align-items: center;
       transition: background 0.5s ease, color 0.5s ease;
     }
-
     body.dark-mode {
       background: var(--bg-dark);
       color: var(--text-dark);
     }
-
     h1 {
       margin-bottom: 20px;
       text-align: center;
       font-weight: 600;
     }
-
     .top-right {
       position: absolute;
       top: 20px;
       right: 20px;
       z-index: 100;
     }
-
     .toggle-button {
       background: none;
       border: none;
@@ -57,11 +49,9 @@
       color: inherit;
       transition: transform 0.4s ease;
     }
-
     .toggle-button.animate {
       transform: rotate(180deg) scale(1.2);
     }
-
     .search-section, .iframe-section {
       width: 100%;
       max-width: 1000px;
@@ -70,7 +60,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .search-box {
       display: flex;
       justify-content: center;
@@ -78,7 +67,6 @@
       width: 100%;
       max-width: 700px;
     }
-
     input {
       flex: 1;
       padding: 0.5rem;
@@ -86,7 +74,6 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-
     button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
@@ -98,7 +85,6 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     .results {
       margin-top: 20px;
       display: flex;
@@ -106,7 +92,6 @@
       gap: 15px;
       justify-content: center;
     }
-
     .video-item {
       cursor: pointer;
       width: 300px;
@@ -117,44 +102,31 @@
       transition: box-shadow 0.2s;
       text-align: center;
     }
-
     body.dark-mode .video-item {
       background: #444;
       color: white;
     }
-
     .video-item:hover {
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
     .video-item img {
       width: 100%;
     }
-
     .video-title {
       padding: 10px;
       font-size: 14px;
       font-weight: bold;
     }
-
-    .iframe-section {
+    .iframe {
       width: 100%;
-      max-width: 1000px;
-      aspect-ratio: 16 / 9;
+      height: 560px;
       display: none;
-      background: black;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 0 auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
     }
-
-    .iframe-section iframe {
+    .iframe iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
-
     .refresh-button {
       position: fixed;
       bottom: 20px;
@@ -167,15 +139,12 @@
       color: inherit;
       transition: transform 0.5s ease;
     }
-
     .refresh-button.rotate {
       transform: rotate(360deg);
     }
-
     .theme-fade {
       transition: background 0.4s ease, color 0.4s ease;
     }
-
     #viewMoreBtn {
       margin-top: 20px;
       padding: 0.5rem 1rem;
@@ -186,7 +155,6 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     body.dark-mode #viewMoreBtn {
       background: #999;
       color: #000;
@@ -219,135 +187,114 @@
   <button id="viewMoreBtn" style="display:none;" onclick="showMore()">View More</button>
 </section>
 
-<section class="iframe-section" id="playerSection">
+<section class="iframe-section iframe" id="playerSection">
   <div id="player"></div>
 </section>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-  const apiKey = "AIzaSyDcIFol8bKEv2dbJPacvHMUOJembMRjowo";
-  let currentResults = [];
-  let shownCount = 0;
-  let ytPlayer;
-  let currentVideoId = "";
+const apiKey = "AIzaSyDcIFol8bKEv2dbJPacvHMUOJembMRjowo";
+let currentResults = [];
+let shownCount = 0;
+let player;
 
-  function searchYouTube() {
-    const query = document.getElementById("query").value;
-    if (!query) return;
+function searchYouTube() {
+  const query = document.getElementById("query").value;
+  if (!query) return;
 
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q=${encodeURIComponent(query)}&key=${apiKey}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q=${encodeURIComponent(query)}&key=${apiKey}`;
 
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        currentResults = data.items;
-        shownCount = 0;
-        document.getElementById("results").innerHTML = "";
-        document.getElementById("viewMoreBtn").style.display = "block";
-        showMore();
-      })
-      .catch(err => console.error("YouTube API error:", err));
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      currentResults = data.items;
+      shownCount = 0;
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("viewMoreBtn").style.display = "block";
+      showMore();
+    })
+    .catch(err => console.error("YouTube API error:", err));
+}
+
+function showMore() {
+  const results = document.getElementById("results");
+  const nextBatch = currentResults.slice(shownCount, shownCount + 4);
+
+  nextBatch.forEach(item => {
+    const videoId = item.id.videoId;
+    const title = item.snippet.title;
+    const thumbnail = item.snippet.thumbnails.medium.url;
+
+    const div = document.createElement("div");
+    div.className = "video-item";
+    div.innerHTML = `
+      <img src="${thumbnail}" alt="${title}">
+      <div class="video-title">${title}</div>
+    `;
+    div.onclick = () => purify(videoId);
+    results.appendChild(div);
+  });
+
+  shownCount += 4;
+  if (shownCount >= currentResults.length) {
+    document.getElementById("viewMoreBtn").style.display = "none";
   }
+}
 
-  function showMore() {
-    const results = document.getElementById("results");
-    const nextBatch = currentResults.slice(shownCount, shownCount + 4);
+function purify(videoId) {
+  document.getElementById("playerSection").style.display = "block";
+  document.getElementById("playerSection").scrollIntoView({ behavior: 'smooth' });
 
-    nextBatch.forEach(item => {
-      const videoId = item.id.videoId;
-      const title = item.snippet.title;
-      const thumbnail = item.snippet.thumbnails.medium.url;
-
-      const div = document.createElement("div");
-      div.className = "video-item";
-      div.innerHTML = `
-        <img src="${thumbnail}" alt="${title}">
-        <div class="video-title">${title}</div>
-      `;
-      div.onclick = () => purify(videoId);
-      results.appendChild(div);
-    });
-
-    shownCount += 4;
-    if (shownCount >= currentResults.length) {
-      document.getElementById("viewMoreBtn").style.display = "none";
-    }
-  }
-
-  function purify(videoId) {
-    currentVideoId = videoId;
-    const section = document.getElementById("playerSection");
-    section.style.display = "block";
-    section.scrollIntoView({ behavior: 'smooth' });
-
-    if (ytPlayer) {
-      ytPlayer.loadVideoById({ videoId, suggestedQuality: 'small' });
-      setTimeout(() => {
-        ytPlayer.setPlaybackQuality('small');
-        ytPlayer.playVideo();
-      }, 1000);
-    } else {
-      ytPlayer = new YT.Player('player', {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: {
-          autoplay: 1,
-          rel: 0,
-          modestbranding: 1,
-          controls: 0,
-          showinfo: 0,
-          iv_load_policy: 3,
-          fs: 0,
-          disablekb: 1
+  if (player) {
+    player.loadVideoById(videoId);
+  } else {
+    player = new YT.Player('player', {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 1,
+        rel: 0,
+        modestbranding: 1,
+        playsinline: 1
+      },
+      events: {
+        onReady: (e) => {
+          e.target.playVideo();
+          e.target.setPlaybackQuality('tiny');
         },
-        events: {
-          'onReady': () => {
-            setTimeout(() => {
-              ytPlayer.setPlaybackQuality('small');
-              ytPlayer.playVideo();
-            }, 1000);
-          },
-          'onStateChange': (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              ytPlayer.setPlaybackQuality('small');
-            }
+        onStateChange: (e) => {
+          if (e.data === YT.PlayerState.PLAYING) {
+            player.setPlaybackQuality('tiny');
           }
         }
-      });
-    }
+      }
+    });
   }
+}
 
-  // Dark mode
-  const toggleButton = document.getElementById("themeToggle");
-  function setTheme(isDark) {
-    document.body.classList.toggle("dark-mode", isDark);
-    toggleButton.textContent = isDark ? "🌙" : "☀️";
-    localStorage.setItem("darkMode", isDark);
-  }
+// Theme Toggle
+const toggleButton = document.getElementById("themeToggle");
 
-  const userPref = localStorage.getItem("darkMode") === "true";
-  setTheme(userPref);
-  toggleButton.addEventListener("click", () => {
-    toggleButton.classList.add("animate");
-    setTimeout(() => toggleButton.classList.remove("animate"), 400);
-    const isDark = !document.body.classList.contains("dark-mode");
-    setTheme(isDark);
-  });
+function setTheme(isDark) {
+  document.body.classList.toggle("dark-mode", isDark);
+  toggleButton.textContent = isDark ? "🌙" : "☀️";
+  localStorage.setItem("darkMode", isDark);
+}
+const userPref = localStorage.getItem("darkMode") === "true";
+setTheme(userPref);
 
-  // Refresh button
-  const refreshBtn = document.getElementById("refreshButton");
-  refreshBtn.addEventListener("click", () => {
-    refreshBtn.classList.add("rotate");
-    setTimeout(() => {
-      location.reload();
-    }, 300);
-  });
+toggleButton.addEventListener("click", () => {
+  toggleButton.classList.add("animate");
+  setTimeout(() => toggleButton.classList.remove("animate"), 400);
+  const isDark = !document.body.classList.contains("dark-mode");
+  setTheme(isDark);
+});
 
-  // Load YouTube API
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+// Refresh Animation
+const refreshBtn = document.getElementById("refreshButton");
+refreshBtn.addEventListener("click", () => {
+  refreshBtn.classList.add("rotate");
+  setTimeout(() => location.reload(), 300);
+});
 </script>
 </body>
 </html>
